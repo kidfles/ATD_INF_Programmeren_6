@@ -1,0 +1,38 @@
+@{
+    ViewData["Title"] = "Start";
+}
+
+<div class="py-4">
+    <h1 class="display-5 fw-bold">Festival Configurator</h1>
+    <p class="lead">Beheer festivals, stel pakketten samen en voeg items toe voor tickets zonder gedoe.</p>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Festivals</h5>
+                <p class="card-text">Voeg nieuwe festivals toe, upload het logo en beheer basisinformatie zoals data en prijzen.</p>
+                <a asp-controller="Festivals" asp-action="Index" class="btn btn-primary">Naar festivals</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Pakketten</h5>
+                <p class="card-text">Bundel items in pakketten per festival en bekijk de details inclusief geselecteerde items.</p>
+                <a asp-controller="Packages" asp-action="Index" class="btn btn-primary">Naar pakketten</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Items</h5>
+                <p class="card-text">Beheer alle beschikbare items en houd typen en prijzen overzichtelijk op orde.</p>
+                <a asp-controller="Items" asp-action="Index" class="btn btn-primary">Naar items</a>
+            </div>
+        </div>
+    </div>
+</div>
