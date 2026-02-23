@@ -1,28 +1,33 @@
 using FestivalTickets.Domain;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace FestivalTickets.Infrastructure;
 
-// This acts as the bridge to our database.
-public sealed class ApplicationDbContext : DbContext
+/// <summary>
+/// Hoofd EF Core DbContext. Erft van IdentityDbContext om AspNetUsers, Roles, Claims etc. op te nemen.
+/// </summary>
+public sealed class ApplicationDbContext : IdentityDbContext<IdentityUser>
 {
-    // The tables in our database.
-    public DbSet<Festival> Festivals => Set<Festival>();
-    public DbSet<Package>  Packages  => Set<Package>();
-    public DbSet<Item>     Items     => Set<Item>();
-    public DbSet<PackageItem> PackageItems => Set<PackageItem>();
+    public DbSet<Festival>     Festivals     => Set<Festival>();
+    public DbSet<Package>      Packages      => Set<Package>();
+    public DbSet<Item>         Items         => Set<Item>();
+    public DbSet<PackageItem>  PackageItems  => Set<PackageItem>();
+    public DbSet<Customer>     Customers     => Set<Customer>();
+    public DbSet<Booking>      Bookings      => Set<Booking>();
+    public DbSet<BookingItem>  BookingItems  => Set<BookingItem>();
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
-    // This is where we configure how the database looks (relationships, constraints, etc).
     protected override void OnModelCreating(ModelBuilder b)
     {
-        base.OnModelCreating(b);
+        base.OnModelCreating(b); // MOET als eerste worden aangeroepen — stelt Identity-tabellen in
 
-        // Making sure we don't have duplicate links between packages and items.
+        // ── PackageItem samengestelde sleutel ──────────────────────────────
         b.Entity<PackageItem>().HasKey(pi => new { pi.PackageId, pi.ItemId });
 
-        // Relationships
+        // ── Relaties ───────────────────────────────────────────────────────
         b.Entity<Package>()
             .HasOne(p => p.Festival)
             .WithMany(f => f.Packages)
@@ -38,84 +43,148 @@ public sealed class ApplicationDbContext : DbContext
             .WithMany()
             .HasForeignKey(pi => pi.ItemId);
 
-        // Decimal precision for money
+        b.Entity<Customer>()
+            .HasOne<IdentityUser>()
+            .WithMany()
+            .HasForeignKey(c => c.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        b.Entity<Booking>()
+            .HasOne(bk => bk.Customer)
+            .WithMany(c => c.Bookings)
+            .HasForeignKey(bk => bk.CustId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        b.Entity<Booking>()
+            .HasOne(bk => bk.Package)
+            .WithMany()
+            .HasForeignKey(bk => bk.PackageId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        b.Entity<BookingItem>()
+            .HasOne(bi => bi.Booking)
+            .WithMany(bk => bk.BookingItems)
+            .HasForeignKey(bi => bi.BookingId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        b.Entity<BookingItem>()
+            .HasOne(bi => bi.Item)
+            .WithMany()
+            .HasForeignKey(bi => bi.ItemId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // ── Precisie ───────────────────────────────────────────────────────
         b.Entity<Festival>().Property(x => x.BasicPrice).HasPrecision(18, 2);
         b.Entity<Item>().Property(x => x.Price).HasPrecision(18, 2);
+        b.Entity<Booking>().Property(x => x.TotalPricePaid).HasPrecision(18, 2);
 
-        // Map DateOnly to date (SQL Server)
+        // ── Datum kolommen ─────────────────────────────────────────────────
         b.Entity<Festival>().Property(x => x.StartDate).HasColumnType("date");
         b.Entity<Festival>().Property(x => x.EndDate).HasColumnType("date");
 
-        // Indexes
-        b.Entity<Festival>()
-            .HasIndex(x => x.Name);
-        b.Entity<Item>()
-            .HasIndex(x => new { x.ItemType, x.Name });
+        // ── Indexen ────────────────────────────────────────────────────────
+        b.Entity<Festival>().HasIndex(x => x.Name);
+        b.Entity<Item>().HasIndex(x => new { x.ItemType, x.Name });
+        b.Entity<Customer>().HasIndex(x => x.UserId).IsUnique();
 
-        // Disable cascade deletes globally
+        // ── Schakel ALLE cascade deletes uit ───────────────────────────────
         foreach (var fk in b.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
             fk.DeleteBehavior = DeleteBehavior.Restrict;
 
-        // Seed data: putting some initial info into the database so it's not empty.
-        b.Entity<Festival>().HasData(new Festival
-        {
-            Id = 1,
-            Name = "Lowlands",
-            Place = "Biddinghuizen",
-            Logo = "/img/logos/lowlands.svg",
-            Description = "Three-day music festival.",
-            BasicPrice = 199.00m,
-            StartDate = new DateOnly(2025, 8, 22),
-            EndDate = new DateOnly(2025, 8, 24)
-        });
+        // ── SEED DATA (niet-identiteit) ────────────────────────────────────
+        SeedFestivals(b);
+        SeedPackages(b);
+        SeedItems(b);
+        SeedPackageItems(b);
+    }
 
-        b.Entity<Package>().HasData(
-            new Package { Id = 1, FestivalId = 1, Name = "Weekend Basic" },
-            new Package { Id = 2, FestivalId = 1, Name = "Weekend Plus" }
-        );
-
-        var items = new List<Item>();
-        int id = 1;
-        void AddItems(ItemType type, params (string name, decimal price)[] defs)
-        {
-            foreach (var d in defs)
+    private static void SeedFestivals(ModelBuilder b)
+    {
+        b.Entity<Festival>().HasData(
+            new Festival
             {
-                items.Add(new Item { Id = id++, Name = d.name, ItemType = type, Price = d.price });
+                Id = 1,
+                Name = "Intents Festival",
+                Place = "Oisterwijk",
+                Logo = "/img/logos/intents.png",
+                Description = "Een driedaags allround festival met vooral focus op de hardere stijlen.",
+                BasicPrice = 50.00m,
+                StartDate = new DateOnly(2026, 6, 5),
+                EndDate   = new DateOnly(2026, 6, 7)
+            },
+            new Festival
+            {
+                Id = 2,
+                Name = "Pinkpop",
+                Place = "Landgraaf",
+                Logo = "/img/logos/pinkpop.png",
+                Description = "Het oudste pop-festival van Nederland met een breed aanbod.",
+                BasicPrice = 75.00m,
+                StartDate = new DateOnly(2026, 12, 18),
+                EndDate   = new DateOnly(2026, 12, 20)
             }
-        }
+        );
+    }
 
-        AddItems(ItemType.Camping,
-            ("Campingspot Small", 25m),
-            ("Campingspot Large", 40m),
-            ("Glamping Upgrade", 120m));
+    private static void SeedPackages(ModelBuilder b)
+    {
+        b.Entity<Package>().HasData(
+            // Festival 1 — Intents
+            new Package { Id = 1, FestivalId = 1, Name = "Budget Deal" },
+            new Package { Id = 2, FestivalId = 1, Name = "Camping Comfort" },
+            new Package { Id = 3, FestivalId = 1, Name = "Ultimate Experience" },
+            // Festival 2 — Pinkpop
+            new Package { Id = 4, FestivalId = 2, Name = "Day Tripper" },
+            new Package { Id = 5, FestivalId = 2, Name = "Weekend Warrior" },
+            new Package { Id = 6, FestivalId = 2, Name = "VIP All-In" }
+        );
+    }
 
-        AddItems(ItemType.Food_and_Drinks,
-            ("Meal Voucher", 12.5m),
-            ("Drink Pack", 15m),
-            ("Breakfast", 9.5m));
+    private static void SeedItems(ModelBuilder b)
+    {
+        // 3 items per ItemType = 18 totaal
+        b.Entity<Item>().HasData(
+            // Camping (0)
+            new Item { Id = 1,  ItemType = ItemType.Camping,         Name = "Campingspot Small",          Price = 25.00m },
+            new Item { Id = 2,  ItemType = ItemType.Camping,         Name = "Campingspot Large",          Price = 40.00m },
+            new Item { Id = 3,  ItemType = ItemType.Camping,         Name = "Glamping Tipi (2 nights)",   Price = 120.00m },
+            // Food_and_Drinks (1)
+            new Item { Id = 4,  ItemType = ItemType.Food_and_Drinks, Name = "Meal Voucher",               Price = 12.50m },
+            new Item { Id = 5,  ItemType = ItemType.Food_and_Drinks, Name = "Drink Pack (10 tokens)",     Price = 15.00m },
+            new Item { Id = 6,  ItemType = ItemType.Food_and_Drinks, Name = "Breakfast Combo",            Price = 9.50m },
+            // Parking (2)
+            new Item { Id = 7,  ItemType = ItemType.Parking,         Name = "Parking Day Pass",           Price = 10.00m },
+            new Item { Id = 8,  ItemType = ItemType.Parking,         Name = "Parking Weekend Pass",       Price = 25.00m },
+            new Item { Id = 9,  ItemType = ItemType.Parking,         Name = "VIP Parking (48h)",          Price = 50.00m },
+            // Merchandise (3)
+            new Item { Id = 10, ItemType = ItemType.Merchandise,     Name = "Festival T-shirt size L",    Price = 20.00m },
+            new Item { Id = 11, ItemType = ItemType.Merchandise,     Name = "Festival Hoodie",            Price = 45.00m },
+            new Item { Id = 12, ItemType = ItemType.Merchandise,     Name = "Baseball Cap",               Price = 15.00m },
+            // VIPAccess (4)
+            new Item { Id = 13, ItemType = ItemType.VIPAccess,       Name = "VIP Lounge Access",          Price = 60.00m },
+            new Item { Id = 14, ItemType = ItemType.VIPAccess,       Name = "Meet & Greet Zone",          Price = 80.00m },
+            new Item { Id = 15, ItemType = ItemType.VIPAccess,       Name = "VIP Backstage Tour",         Price = 150.00m },
+            // Other (5)
+            new Item { Id = 16, ItemType = ItemType.Other,           Name = "Locker Rental",              Price = 15.00m },
+            new Item { Id = 17, ItemType = ItemType.Other,           Name = "Powerbank Rental",           Price = 8.00m },
+            new Item { Id = 18, ItemType = ItemType.Other,           Name = "Rain Poncho",                Price = 5.00m }
+        );
+    }
 
-        AddItems(ItemType.Parking,
-            ("Parking Day", 10m),
-            ("Parking Weekend", 25m),
-            ("VIP Parking", 50m));
-
-        AddItems(ItemType.Merchandise,
-            ("T-Shirt", 30m),
-            ("Hoodie", 55m),
-            ("Poster", 12m));
-
-        AddItems(ItemType.VIPAccess,
-            ("VIP Day", 80m),
-            ("VIP Weekend", 200m),
-            ("Backstage Tour", 150m));
-
-        AddItems(ItemType.Other,
-            ("Locker", 15m),
-            ("Powerbank Rental", 8m),
-            ("Rain Poncho", 5m));
-
-        b.Entity<Item>().HasData(items);
+    private static void SeedPackageItems(ModelBuilder b)
+    {
+        // Packages 1 & 4: geen items (alleen toegang)
+        // Packages 2 & 5: alleen T-shirt
+        b.Entity<PackageItem>().HasData(
+            new PackageItem { PackageId = 2, ItemId = 10, Quantity = 1 }, // Camping Comfort → T-shirt
+            new PackageItem { PackageId = 5, ItemId = 10, Quantity = 1 }, // Weekend Warrior → T-shirt
+            // Packages 3 & 6: meerdere items
+            new PackageItem { PackageId = 3, ItemId = 3,  Quantity = 1 }, // Ultimate → Glamping Tipi
+            new PackageItem { PackageId = 3, ItemId = 13, Quantity = 1 }, // Ultimate → VIP Lounge
+            new PackageItem { PackageId = 3, ItemId = 5,  Quantity = 2 }, // Ultimate → 2x Drink Pack
+            new PackageItem { PackageId = 6, ItemId = 9,  Quantity = 1 }, // VIP All-In → VIP Parking
+            new PackageItem { PackageId = 6, ItemId = 14, Quantity = 1 }, // VIP All-In → Meet & Greet
+            new PackageItem { PackageId = 6, ItemId = 4,  Quantity = 3 }  // VIP All-In → 3x Meal Voucher
+        );
     }
 }
-
-
