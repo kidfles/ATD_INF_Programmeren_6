@@ -11,6 +11,7 @@ public sealed class Booking
 {
     public int Id { get; set; }
 
+    [Range(1, int.MaxValue)]
     [Display(Name = "Pakket")]
     public int PackageId { get; set; }
     public Package? Package { get; set; }
@@ -20,6 +21,7 @@ public sealed class Booking
     [Display(Name = "Aantal tickets")]
     public int Quantity { get; set; }
 
+    [Range(1, int.MaxValue)]
     [Display(Name = "Klant")]
     public int CustId { get; set; }
     public Customer? Customer { get; set; }
@@ -28,6 +30,7 @@ public sealed class Booking
     public DateTime BookingDate { get; set; }
 
     /// <summary>Definitieve totaalprijs na alle kortingen, opgeslagen op het moment van boeken.</summary>
+    [Range(0, double.MaxValue)]
     [DataType(DataType.Currency)]
     [Display(Name = "Totaalprijs")]
     public decimal TotalPricePaid { get; set; }
