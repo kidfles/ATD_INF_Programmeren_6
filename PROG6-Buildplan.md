@@ -9,7 +9,7 @@ Tell the agent: *"Follow the rules in this file. Execute Phase X now."*
 
 ## ⚠️ GLOBAL RULES (agent must follow at all times)
 
-- **Language**: C# code, comments, DB column names → English. UI labels → Dutch (or English, both accepted per rubric).
+- **Language**: C# code, Dutch comments, DB column names → English. UI labels → Dutch (or English, both accepted per rubric).
 - **Framework**: ASP.NET Core 9, MVC pattern, EF Core 9 Code First, MS SQL Server.
 - **No cascade delete** anywhere. All FK `DeleteBehavior` = `Restrict`.
 - **No AJAX**, no React/Angular. Plain MVC postbacks only.
