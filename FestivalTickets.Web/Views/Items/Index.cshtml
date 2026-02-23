@@ -1,0 +1,70 @@
+@model IEnumerable<FestivalTickets.Domain.Item>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Items</h1>
+
+<form method="get" class="row g-3 mb-3">
+    <div class="col-md-3">
+        @{
+            var selectedType = ViewData["CurrentType"] as ItemType?;
+        }
+        <select name="type" class="form-select" onchange="this.form.submit()">
+            <option value="" selected="@(selectedType is null ? "selected" : null)">Alle items</option>
+            @foreach (ItemType t in Enum.GetValues<ItemType>())
+            {
+                <option value="@t" selected="@(selectedType == t ? "selected" : null)">@t</option>
+            }
+        </select>
+    </div>
+    <div class="col-md-4">
+        <input type="text" name="search" value="@ViewData["CurrentSearch"]" class="form-control" placeholder="Zoek op naam..." />
+    </div>
+    <div class="col-md-2">
+        <button type="submit" class="btn btn-primary w-100">Filter</button>
+    </div>
+    <div class="col-md-2">
+        <a class="btn btn-secondary w-100" asp-action="Index">Reset</a>
+    </div>
+    <div class="col-md-12 mt-2">
+        <a class="btn btn-link" asp-action="Index" asp-route-sort="@ViewData["TypeSort"]" asp-route-type="@ViewData["CurrentType"]" asp-route-search="@ViewData["CurrentSearch"]">Sorteer op type</a>
+        <a class="btn btn-link" asp-action="Index" asp-route-sort="@ViewData["NameSort"]" asp-route-type="@ViewData["CurrentType"]" asp-route-search="@ViewData["CurrentSearch"]">Sorteer op naam</a>
+        <a class="btn btn-link" asp-action="Index" asp-route-sort="@ViewData["PriceSort"]" asp-route-type="@ViewData["CurrentType"]" asp-route-search="@ViewData["CurrentSearch"]">Sorteer op prijs</a>
+    </div>
+</form>
+
+<p>
+    <a class="btn btn-success" asp-action="Create">Nieuw</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.Name)</th>
+            <th>@Html.DisplayNameFor(model => model.ItemType)</th>
+            <th>@Html.DisplayNameFor(model => model.Price)</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ItemType)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Price)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Bewerken</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Verwijderen</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
