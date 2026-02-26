@@ -1,0 +1,45 @@
+@model FestivalTickets.Domain.Booking
+
+@{
+    ViewData["Title"] = "Boeking Verwijderen";
+}
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h1>Boeking Verwijderen</h1>
+        <p class="lead text-danger">Weet u zeker dat u deze boeking wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.</p>
+    </div>
+</div>
+
+<div class="card border-danger shadow-sm mb-4 rounded-4 overflow-hidden">
+    <div class="card-header bg-danger text-white px-4 py-3">
+        <h5 class="mb-0">Boeking Samenvatting</h5>
+    </div>
+    <div class="card-body p-4">
+        <dl class="row mb-0">
+            <dt class="col-sm-3 text-muted">Klant</dt>
+            <dd class="col-sm-9 fw-medium">@Model.Customer?.FirstName @Model.Customer?.LastName</dd>
+
+            <dt class="col-sm-3 text-muted">Boekingsdatum</dt>
+            <dd class="col-sm-9">@Model.BookingDate.ToString("dd-MM-yyyy HH:mm")</dd>
+
+            <dt class="col-sm-3 text-muted">Festival</dt>
+            <dd class="col-sm-9">@Model.Package?.Festival?.Name</dd>
+
+            <dt class="col-sm-3 text-muted">Pakket</dt>
+            <dd class="col-sm-9">@Model.Package?.Name (@Model.Quantity x)</dd>
+
+            <dt class="col-sm-3 text-muted mt-2">Totaalprijs</dt>
+            <dd class="col-sm-9 mt-2 fw-bold text-success">@Model.TotalPricePaid.ToString("C")</dd>
+        </dl>
+    </div>
+    <div class="card-footer bg-light px-4 py-3 border-top text-end">
+        <form asp-action="Delete" method="post">
+            <input type="hidden" asp-for="Id" />
+            <a asp-action="Index" class="btn btn-outline-secondary me-2">Annuleren</a>
+            <button type="submit" class="btn btn-danger">
+                <i class="bi bi-trash"></i> Verwijderen Bevestigen
+            </button>
+        </form>
+    </div>
+</div>

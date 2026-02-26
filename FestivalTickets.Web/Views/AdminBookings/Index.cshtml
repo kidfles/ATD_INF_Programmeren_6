@@ -1,0 +1,72 @@
+@model IEnumerable<FestivalTickets.Domain.Booking>
+
+@{
+    ViewData["Title"] = "Boekingen Beheren";
+}
+
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1>Boekingen Beheren</h1>
+    </div>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success mt-3 shadow-sm rounded-3">
+        @TempData["Success"]
+    </div>
+}
+
+<div class="card shadow-sm border-0 mt-3 rounded-4 overflow-hidden">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light text-muted">
+                    <tr>
+                        <th class="ps-4">Boekingsdatum</th>
+                        <th>Klantnaam</th>
+                        <th>Festival</th>
+                        <th>Pakket</th>
+                        <th class="text-center">Aantal</th>
+                        <th class="text-end">Totaalprijs</th>
+                        <th class="text-center pe-4">Acties</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center py-4 text-muted">Er zijn nog geen boekingen.</td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var booking in Model)
+                        {
+                            <tr>
+                                <td class="ps-4">@booking.BookingDate.ToString("dd-MM-yyyy HH:mm")</td>
+                                <td>@booking.Customer?.FirstName @booking.Customer?.LastName</td>
+                                <td>@booking.Package?.Festival?.Name</td>
+                                <td>@booking.Package?.Name</td>
+                                <td class="text-center">
+                                    <span class="badge bg-secondary rounded-pill px-3 py-2">@booking.Quantity</span>
+                                </td>
+                                <td class="text-end fw-bold">@booking.TotalPricePaid.ToString("C")</td>
+                                <td class="text-center pe-4">
+                                    <div class="btn-group btn-group-sm">
+                                        <a asp-action="Details" asp-route-id="@booking.Id" class="btn btn-outline-info rounded-start-pill" title="Details">
+                                            <i class="bi bi-file-earmark-text"></i> Details
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@booking.Id" class="btn btn-outline-danger rounded-end-pill" title="Verwijderen">
+                                            <i class="bi bi-trash"></i> Verwijderen
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
