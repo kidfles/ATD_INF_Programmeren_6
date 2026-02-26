@@ -1,0 +1,99 @@
+@model FestivalTickets.Domain.Booking
+
+@{
+    ViewData["Title"] = "Boeking Details";
+}
+
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1>Boeking Details (Factuur)</h1>
+    </div>
+    <div class="col-md-4 text-end">
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Terug
+        </a>
+    </div>
+</div>
+
+<div class="card shadow-sm border-0 rounded-4 overflow-hidden mb-4">
+    <div class="card-header bg-light border-bottom px-4 py-3">
+        <h5 class="mb-0">Factuurinformatie</h5>
+    </div>
+    <div class="card-body p-4">
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <h6 class="text-muted text-uppercase fw-bold mb-2">Klant</h6>
+                <p class="mb-1"><strong>Naam:</strong> @Model.Customer?.FirstName @Model.Customer?.LastName</p>
+                <p class="mb-1"><strong>E-mail:</strong> @Model.Customer?.Email</p>
+                <p class="mb-1"><strong>Boekingsdatum:</strong> @Model.BookingDate.ToString("dd-MM-yyyy HH:mm")</p>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <h6 class="text-muted text-uppercase fw-bold mb-2">Festival</h6>
+                <p class="mb-1"><strong>@Model.Package?.Festival?.Name</strong></p>
+                <p class="mb-1">Locatie: @Model.Package?.Festival?.Place</p>
+                <p class="mb-1">Datum: @Model.Package?.Festival?.StartDate.ToString("dd MMM yyyy") tot @Model.Package?.Festival?.EndDate.ToString("dd MMM yyyy")</p>
+            </div>
+        </div>
+
+        <div class="table-responsive mb-4">
+            <table class="table table-bordered">
+                <thead class="table-light">
+                    <tr>
+                        <th>Omschrijving</th>
+                        <th class="text-center">Aantal</th>
+                        <th class="text-end">Prijs</th>
+                        <th class="text-end">Subtotaal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <strong>@Model.Package?.Name</strong><br />
+                            <small class="text-muted">Tickets voor festival</small>
+                        </td>
+                        <td class="text-center">@Model.Quantity</td>
+                        <td class="text-end">@Model.Package?.Festival?.BasicPrice.ToString("C") <small class="text-muted">excl. items</small></td>
+                        <td class="text-end">@{ var pkgSub = Model.Quantity * (Model.Package?.Festival?.BasicPrice ?? 0); } @pkgSub.ToString("C")</td>
+                    </tr>
+                    @foreach (var pItem in Model.Package?.PackageItems ?? new List<FestivalTickets.Domain.PackageItem>())
+                    {
+                        <tr>
+                            <td class="ps-4">
+                                <em>@pItem.Item?.Name</em> (Inbegrepen in pakket)
+                            </td>
+                            <td class="text-center">@(Model.Quantity * pItem.Quantity)</td>
+                            <td class="text-end">@pItem.Item?.Price.ToString("C")</td>
+                            <td class="text-end">@{ var incSub = Model.Quantity * pItem.Quantity * (pItem.Item?.Price ?? 0); } @incSub.ToString("C")</td>
+                        </tr>
+                    }
+                    @if (Model.BookingItems?.Any() == true)
+                    {
+                        <tr>
+                            <td colspan="4" class="bg-light fw-bold">Extra Items</td>
+                        </tr>
+                        @foreach (var bItem in Model.BookingItems)
+                        {
+                            <tr>
+                                <td class="ps-4">@bItem.Item?.Name</td>
+                                <td class="text-center">@bItem.Quantity</td>
+                                <td class="text-end">@bItem.Item?.Price.ToString("C")</td>
+                                <td class="text-end">@{ var itemSub = bItem.Quantity * (bItem.Item?.Price ?? 0); } @itemSub.ToString("C")</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="3" class="text-end border-0 fw-bold fs-5">Totaal Betaald:</td>
+                        <td class="text-end border-0 fw-bold fs-5 text-success">@Model.TotalPricePaid.ToString("C")</td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" class="text-end border-0 text-muted">
+                            <small>Inclusief eventuele berekende kortingen.</small>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
