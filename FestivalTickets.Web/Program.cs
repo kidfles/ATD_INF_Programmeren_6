@@ -75,9 +75,9 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
+app.UseSession();        // ← MUST come after UseRouting and before authentication/authorization and MapControllerRoute
 app.UseAuthentication(); // ← MUST come before UseAuthorization
 app.UseAuthorization();
-app.UseSession();        // ← MUST come after UseAuthorization, before MapControllerRoute
 
 app.MapControllerRoute(
     name: "default",
