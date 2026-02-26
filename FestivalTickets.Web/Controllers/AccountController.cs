@@ -78,7 +78,14 @@ public class AccountController : Controller
 
         if (result.Succeeded)
         {
-            await _userManager.AddToRoleAsync(user, "Customer");
+            var roleResult = await _userManager.AddToRoleAsync(user, "Customer");
+            if (!roleResult.Succeeded)
+            {
+                await _userManager.DeleteAsync(user);
+                foreach (var error in roleResult.Errors)
+                    ModelState.AddModelError(string.Empty, error.Description);
+                return View(model);
+            }
 
             var customer = new Customer
             {
@@ -87,15 +94,26 @@ public class AccountController : Controller
                 Email     = model.Email,
                 UserId    = user.Id
             };
-            await _customerRepo.AddAsync(customer);
-            await _customerRepo.SaveChangesAsync();
 
-            await _signInManager.SignInAsync(user, isPersistent: false);
+            try
+            {
+                await _customerRepo.AddAsync(customer);
+                await _customerRepo.SaveChangesAsync();
 
-            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
-                return Redirect(returnUrl);
+                await _signInManager.SignInAsync(user, isPersistent: false);
 
-            return RedirectToAction("Index", "Home");
+                if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                    return Redirect(returnUrl);
+
+                return RedirectToAction("Index", "Home");
+            }
+            catch (Exception)
+            {
+                // Rollback door de gebruiker te verwijderen
+                await _userManager.DeleteAsync(user);
+                ModelState.AddModelError(string.Empty, "Er is een fout opgetreden tijdens het opslaan van uw gegevens. Probeer het opnieuw.");
+                return View(model);
+            }
         }
 
         foreach (var error in result.Errors)
