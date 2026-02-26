@@ -50,6 +50,9 @@ public class AdminBookingsController : Controller
     [HttpPost, ActionName("Delete"), ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
+        var booking = await _bookingRepo.GetByIdAsync(id);
+        if (booking == null) return NotFound();
+
         await _bookingRepo.DeleteAsync(id);
         await _bookingRepo.SaveChangesAsync();
         TempData["Success"] = "Boeking verwijderd.";
@@ -90,8 +93,17 @@ public class AdminBookingsController : Controller
         if (user == null) return NotFound();
 
         var claims = await _userManager.GetClaimsAsync(user);
-        if (!claims.Any(c => c.Type == "LoyaltyCard"))
+        var currentClaim = claims.FirstOrDefault(c => c.Type == "LoyaltyCard");
+
+        if (currentClaim == null)
+        {
             await _userManager.AddClaimAsync(user, new System.Security.Claims.Claim("LoyaltyCard", "true"));
+        }
+        else if (currentClaim.Value != "true")
+        {
+            await _userManager.RemoveClaimAsync(user, currentClaim);
+            await _userManager.AddClaimAsync(user, new System.Security.Claims.Claim("LoyaltyCard", "true"));
+        }
 
         TempData["Success"] = $"Loyaliteitskaart toegekend aan {customer.FirstName}.";
         return RedirectToAction(nameof(ManageLoyalty));
