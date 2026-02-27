@@ -1,0 +1,65 @@
+@model FestivalTickets.Domain.Booking
+
+@{
+    var festivalName = Model.Package?.Festival?.Name ?? "-";
+    var packageName = Model.Package?.Name ?? "-";
+}
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <h2 class="h5">Boekingsoverzicht</h2>
+
+        <dl class="row mb-3">
+            <dt class="col-sm-3">Festival</dt>
+            <dd class="col-sm-9">@festivalName</dd>
+            <dt class="col-sm-3">Pakket</dt>
+            <dd class="col-sm-9">@packageName</dd>
+            <dt class="col-sm-3">Boekingsdatum</dt>
+            <dd class="col-sm-9">@Model.BookingDate.ToString("dd-MM-yyyy")</dd>
+            <dt class="col-sm-3">Aantal tickets</dt>
+            <dd class="col-sm-9">@Model.Quantity</dd>
+        </dl>
+
+        <h3 class="h6">Extra items</h3>
+        @if (Model.BookingItems == null || !Model.BookingItems.Any())
+        {
+            <p class="text-muted mb-3">Geen extra items.</p>
+        }
+        else
+        {
+            <div class="table-responsive mb-3">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Aantal</th>
+                            <th>Prijs per stuk</th>
+                            <th>Subtotaal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var line in Model.BookingItems)
+                        {
+                            var itemName = line.Item?.Name ?? "-";
+                            var unitPrice = line.Item?.Price ?? 0m;
+                            var subtotal = unitPrice * line.Quantity;
+
+                            <tr>
+                                <td>@itemName</td>
+                                <td>@line.Quantity</td>
+                                <td>@unitPrice.ToString("C")</td>
+                                <td>@subtotal.ToString("C")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+
+        <hr />
+        <div class="d-flex justify-content-between">
+            <span class="fw-semibold">Totaal betaald</span>
+            <span class="fw-bold">@Model.TotalPricePaid.ToString("C")</span>
+        </div>
+    </div>
+</div>

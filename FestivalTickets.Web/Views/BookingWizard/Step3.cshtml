@@ -1,0 +1,94 @@
+@model FestivalTickets.Web.Models.Step3ViewModel
+
+@{
+    ViewData["Title"] = "Boekingswizard - Stap 3";
+    var quantitiesByItemId = Model.ExtraItems.ToDictionary(x => x.ItemId, x => x.Quantity);
+    var items = Model.AllItems.OrderBy(i => i.ItemType).ThenBy(i => i.Name).ToList();
+}
+
+<partial name="_WizardStepIndicator" model="3" />
+
+<h1 class="h3 mb-3">Stap 3 - Extra items</h1>
+
+<div class="alert alert-light border">
+    <strong>Festival:</strong> @ViewBag.FestivalName <br />
+    <strong>Pakket:</strong> @ViewBag.PackageName <br />
+    <strong>Aantal tickets:</strong> @ViewBag.TicketQuantity
+</div>
+
+<form asp-action="Step3" method="post">
+    @Html.AntiForgeryToken()
+
+    @if (!items.Any())
+    {
+        <div class="alert alert-info">Geen gegevens beschikbaar.</div>
+    }
+    else
+    {
+        <div class="table-responsive mb-3">
+            <table class="table table-striped align-middle">
+                <thead>
+                    <tr>
+                        <th>ItemType</th>
+                        <th>Item</th>
+                        <th>Prijs</th>
+                        <th>Toevoegen</th>
+                        <th style="width: 170px;">Aantal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @for (int i = 0; i < items.Count; i++)
+                {
+                    var item = items[i];
+                    var qty = quantitiesByItemId.TryGetValue(item.Id, out var selectedQty) ? selectedQty : 0;
+                    var isChecked = qty > 0;
+                    <tr>
+                        <td>@item.ItemType</td>
+                        <td>@item.Name</td>
+                        <td>@item.Price.ToString("C")</td>
+                        <td>
+                            <input
+                                class="form-check-input wizard-select-toggle"
+                                type="checkbox"
+                                data-target="qty-@item.Id"
+                                @(isChecked ? "checked" : null) />
+                        </td>
+                        <td>
+                            <input type="hidden" name="SelectedItemIds" value="@item.Id" />
+                            <input id="qty-@item.Id" class="form-control" type="number" min="0" max="1000" name="Quantities" value="@qty" />
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+
+    <div class="d-flex gap-2">
+        <a asp-action="Step2" class="btn btn-outline-secondary">Terug</a>
+        <button type="submit" class="btn btn-primary">Volgende</button>
+        <button type="submit" class="btn btn-outline-danger" formaction="@Url.Action("Cancel", "BookingWizard")" formmethod="post">Annuleren</button>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        (function () {
+            const toggles = document.querySelectorAll(".wizard-select-toggle");
+            toggles.forEach(toggle => {
+                toggle.addEventListener("change", function () {
+                    const targetId = this.getAttribute("data-target");
+                    const qtyInput = document.getElementById(targetId);
+                    if (!qtyInput) return;
+                    if (this.checked && (!qtyInput.value || qtyInput.value === "0")) {
+                        qtyInput.value = "1";
+                    }
+                    if (!this.checked) {
+                        qtyInput.value = "0";
+                    }
+                });
+            });
+        })();
+    </script>
+}

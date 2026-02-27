@@ -1,0 +1,44 @@
+@model IEnumerable<FestivalTickets.Domain.Booking>
+
+@{
+    ViewData["Title"] = "Mijn Boekingen";
+}
+
+<h1 class="mb-3">Mijn Boekingen</h1>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">Geen gegevens beschikbaar.</div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-striped align-middle">
+            <thead>
+                <tr>
+                    <th>Boekingsdatum</th>
+                    <th>Festival</th>
+                    <th>Pakket</th>
+                    <th>Aantal</th>
+                    <th>Totaalprijs</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var booking in Model)
+                {
+                    <tr>
+                        <td>@booking.BookingDate.ToString("dd-MM-yyyy")</td>
+                        <td>@(booking.Package?.Festival?.Name ?? "-")</td>
+                        <td>@(booking.Package?.Name ?? "-")</td>
+                        <td>@booking.Quantity</td>
+                        <td>@booking.TotalPricePaid.ToString("C")</td>
+                        <td class="text-end">
+                            <a asp-action="Details" asp-route-id="@booking.Id" class="btn btn-outline-primary btn-sm">Details</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

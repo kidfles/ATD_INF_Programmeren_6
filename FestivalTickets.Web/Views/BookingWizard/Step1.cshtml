@@ -1,0 +1,86 @@
+@model FestivalTickets.Web.Models.Step1ViewModel
+
+@{
+    ViewData["Title"] = "Boekingswizard - Stap 1";
+}
+
+<partial name="_WizardStepIndicator" model="1" />
+
+<h1 class="h3 mb-3">Stap 1 - Kies een festival</h1>
+
+<form method="get" asp-action="Step1" class="row g-3 mb-4">
+    <div class="col-md-4">
+        <label class="form-label" for="from">Van</label>
+        <input class="form-control" type="date" id="from" name="from" value="@Model.FilterFrom.ToString("yyyy-MM-dd")" />
+    </div>
+    <div class="col-md-4">
+        <label class="form-label" for="to">Tot</label>
+        <input class="form-control" type="date" id="to" name="to" value="@Model.FilterTo.ToString("yyyy-MM-dd")" />
+    </div>
+    <div class="col-md-4 d-flex align-items-end">
+        <button class="btn btn-outline-primary" type="submit">Filter</button>
+    </div>
+</form>
+
+<form asp-action="Step1" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="FilterFrom" />
+    <input type="hidden" asp-for="FilterTo" />
+
+    <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+
+    @if (!Model.Festivals.Any())
+    {
+        <div class="alert alert-info">Geen gegevens beschikbaar.</div>
+    }
+    else
+    {
+        <div class="table-responsive mb-3">
+            <table class="table table-striped align-middle">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Festival</th>
+                        <th>Plaats</th>
+                        <th>Periode</th>
+                        <th>Basisprijs</th>
+                        <th>Logo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var festival in Model.Festivals)
+                {
+                    <tr>
+                        <td>
+                            <input class="form-check-input" type="radio" asp-for="SelectedFestivalId" value="@festival.Id" />
+                        </td>
+                        <td>@festival.Name</td>
+                        <td>@festival.Place</td>
+                        <td>@festival.StartDate.ToString("dd-MM-yyyy") - @festival.EndDate.ToString("dd-MM-yyyy")</td>
+                        <td>@festival.BasicPrice.ToString("C")</td>
+                        <td>
+                            @if (!string.IsNullOrWhiteSpace(festival.Logo))
+                            {
+                                <img src="@festival.Logo" alt="@festival.Name" style="max-height:40px;" />
+                            }
+                            else
+                            {
+                                <span class="text-muted">-</span>
+                            }
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+
+    <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary">Volgende</button>
+        <button type="submit" class="btn btn-outline-danger" formaction="@Url.Action("Cancel", "BookingWizard")" formmethod="post">Annuleren</button>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

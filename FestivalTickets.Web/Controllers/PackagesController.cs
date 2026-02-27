@@ -6,10 +6,12 @@ using Microsoft.EntityFrameworkCore;
 using FestivalTickets.Domain;
 using FestivalTickets.Infrastructure;
 using FestivalTickets.Web.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FestivalTickets.Web.Controllers
 {
     // This is the main controller that handles everything related to Packages.
+    [Authorize(Roles = "Administrator")]
     public class PackagesController : Controller
     {
         private readonly ApplicationDbContext _context;

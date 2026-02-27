@@ -1,0 +1,58 @@
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+<ul class="navbar-nav ms-auto align-items-sm-center">
+@if (SignInManager.IsSignedIn(User))
+{
+    var currentUser = await UserManager.GetUserAsync(User);
+    var userName = currentUser?.Email ?? User.Identity?.Name ?? "Gebruiker";
+    var role = User.IsInRole("Administrator") ? "Administrator"
+        : User.IsInRole("Customer") ? "Customer"
+        : "-";
+
+    if (User.IsInRole("Customer"))
+    {
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-controller="CustomerBookings" asp-action="Index">My Bookings</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-controller="Account" asp-action="Profile">Profile</a>
+        </li>
+    }
+    if (User.IsInRole("Administrator"))
+    {
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-controller="AdminBookings" asp-action="Index">Bookings</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-controller="Festivals" asp-action="Index">Festivals</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-controller="Packages" asp-action="Index">Packages</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-controller="Items" asp-action="Index">Items</a>
+        </li>
+    }
+
+    <li class="nav-item">
+        <span class="nav-link text-muted">@userName (@role)</span>
+    </li>
+    <li class="nav-item">
+        <form class="d-inline" asp-controller="Account" asp-action="Logout" method="post">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-link nav-link text-dark">Logout</button>
+        </form>
+    </li>
+}
+else
+{
+    <li class="nav-item">
+        <a class="nav-link text-dark" asp-controller="Account" asp-action="Login">Login</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link text-dark" asp-controller="Account" asp-action="Register">Register</a>
+    </li>
+}
+</ul>

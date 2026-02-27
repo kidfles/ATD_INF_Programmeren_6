@@ -1,16 +1,21 @@
 using FestivalTickets.Domain;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace FestivalTickets.Infrastructure;
 
 // This acts as the bridge to our database.
-public sealed class ApplicationDbContext : DbContext
+public sealed class ApplicationDbContext : IdentityDbContext<IdentityUser>
 {
     // The tables in our database.
     public DbSet<Festival> Festivals => Set<Festival>();
     public DbSet<Package>  Packages  => Set<Package>();
     public DbSet<Item>     Items     => Set<Item>();
     public DbSet<PackageItem> PackageItems => Set<PackageItem>();
+    public DbSet<Customer> Customers => Set<Customer>();
+    public DbSet<Booking> Bookings => Set<Booking>();
+    public DbSet<BookingItem> BookingItems => Set<BookingItem>();
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
@@ -38,9 +43,34 @@ public sealed class ApplicationDbContext : DbContext
             .WithMany()
             .HasForeignKey(pi => pi.ItemId);
 
+        b.Entity<Customer>()
+            .HasIndex(c => c.UserId)
+            .IsUnique();
+
+        b.Entity<Booking>()
+            .HasOne(x => x.Customer)
+            .WithMany(c => c.Bookings)
+            .HasForeignKey(x => x.CustId);
+
+        b.Entity<Booking>()
+            .HasOne(x => x.Package)
+            .WithMany()
+            .HasForeignKey(x => x.PackageId);
+
+        b.Entity<BookingItem>()
+            .HasOne(x => x.Booking)
+            .WithMany(x => x.BookingItems)
+            .HasForeignKey(x => x.BookingId);
+
+        b.Entity<BookingItem>()
+            .HasOne(x => x.Item)
+            .WithMany()
+            .HasForeignKey(x => x.ItemId);
+
         // Decimal precision for money
         b.Entity<Festival>().Property(x => x.BasicPrice).HasPrecision(18, 2);
         b.Entity<Item>().Property(x => x.Price).HasPrecision(18, 2);
+        b.Entity<Booking>().Property(x => x.TotalPricePaid).HasPrecision(18, 2);
 
         // Map DateOnly to date (SQL Server)
         b.Entity<Festival>().Property(x => x.StartDate).HasColumnType("date");
