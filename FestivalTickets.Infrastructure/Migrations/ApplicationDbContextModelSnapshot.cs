@@ -17,7 +17,7 @@ namespace FestivalTickets.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.0")
+                .HasAnnotation("ProductVersion", "9.0.13")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -52,7 +52,7 @@ namespace FestivalTickets.Infrastructure.Migrations
 
                     b.HasIndex("PackageId");
 
-                    b.ToTable("Bookings");
+                    b.ToTable("Bookings", (string)null);
                 });
 
             modelBuilder.Entity("FestivalTickets.Domain.BookingItem", b =>
@@ -78,7 +78,7 @@ namespace FestivalTickets.Infrastructure.Migrations
 
                     b.HasIndex("ItemId");
 
-                    b.ToTable("BookingItems");
+                    b.ToTable("BookingItems", (string)null);
                 });
 
             modelBuilder.Entity("FestivalTickets.Domain.Customer", b =>
@@ -113,7 +113,7 @@ namespace FestivalTickets.Infrastructure.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("Customers");
+                    b.ToTable("Customers", (string)null);
                 });
 
             modelBuilder.Entity("FestivalTickets.Domain.Festival", b =>
@@ -156,19 +156,30 @@ namespace FestivalTickets.Infrastructure.Migrations
 
                     b.HasIndex("Name");
 
-                    b.ToTable("Festivals");
+                    b.ToTable("Festivals", (string)null);
 
                     b.HasData(
                         new
                         {
                             Id = 1,
-                            BasicPrice = 199.00m,
-                            Description = "Three-day music festival.",
-                            EndDate = new DateOnly(2025, 8, 24),
-                            Logo = "/img/logos/lowlands.svg",
-                            Name = "Lowlands",
-                            Place = "Biddinghuizen",
-                            StartDate = new DateOnly(2025, 8, 22)
+                            BasicPrice = 50.00m,
+                            Description = "Een driedaags allround festival met vooral focus op de hardere stijlen.",
+                            EndDate = new DateOnly(2026, 6, 7),
+                            Logo = "/img/logos/intents.png",
+                            Name = "Intents Festival",
+                            Place = "Oisterwijk",
+                            StartDate = new DateOnly(2026, 6, 5)
+                        },
+                        new
+                        {
+                            Id = 2,
+                            BasicPrice = 75.00m,
+                            Description = "Het oudste pop-festival van Nederland met een breed aanbod.",
+                            EndDate = new DateOnly(2026, 12, 20),
+                            Logo = "/img/logos/pinkpop.png",
+                            Name = "Pinkpop",
+                            Place = "Landgraaf",
+                            StartDate = new DateOnly(2026, 12, 18)
                         });
                 });
 
@@ -196,7 +207,7 @@ namespace FestivalTickets.Infrastructure.Migrations
 
                     b.HasIndex("ItemType", "Name");
 
-                    b.ToTable("Items");
+                    b.ToTable("Items", (string)null);
 
                     b.HasData(
                         new
@@ -204,126 +215,126 @@ namespace FestivalTickets.Infrastructure.Migrations
                             Id = 1,
                             ItemType = 0,
                             Name = "Campingspot Small",
-                            Price = 25m
+                            Price = 25.00m
                         },
                         new
                         {
                             Id = 2,
                             ItemType = 0,
                             Name = "Campingspot Large",
-                            Price = 40m
+                            Price = 40.00m
                         },
                         new
                         {
                             Id = 3,
                             ItemType = 0,
-                            Name = "Glamping Upgrade",
-                            Price = 120m
+                            Name = "Glamping Tipi (2 nights)",
+                            Price = 120.00m
                         },
                         new
                         {
                             Id = 4,
                             ItemType = 1,
                             Name = "Meal Voucher",
-                            Price = 12.5m
+                            Price = 12.50m
                         },
                         new
                         {
                             Id = 5,
                             ItemType = 1,
-                            Name = "Drink Pack",
-                            Price = 15m
+                            Name = "Drink Pack (10 tokens)",
+                            Price = 15.00m
                         },
                         new
                         {
                             Id = 6,
                             ItemType = 1,
-                            Name = "Breakfast",
-                            Price = 9.5m
+                            Name = "Breakfast Combo",
+                            Price = 9.50m
                         },
                         new
                         {
                             Id = 7,
                             ItemType = 2,
-                            Name = "Parking Day",
-                            Price = 10m
+                            Name = "Parking Day Pass",
+                            Price = 10.00m
                         },
                         new
                         {
                             Id = 8,
                             ItemType = 2,
-                            Name = "Parking Weekend",
-                            Price = 25m
+                            Name = "Parking Weekend Pass",
+                            Price = 25.00m
                         },
                         new
                         {
                             Id = 9,
                             ItemType = 2,
-                            Name = "VIP Parking",
-                            Price = 50m
+                            Name = "VIP Parking (48h)",
+                            Price = 50.00m
                         },
                         new
                         {
                             Id = 10,
                             ItemType = 3,
-                            Name = "T-Shirt",
-                            Price = 30m
+                            Name = "Festival T-shirt size L",
+                            Price = 20.00m
                         },
                         new
                         {
                             Id = 11,
                             ItemType = 3,
-                            Name = "Hoodie",
-                            Price = 55m
+                            Name = "Festival Hoodie",
+                            Price = 45.00m
                         },
                         new
                         {
                             Id = 12,
                             ItemType = 3,
-                            Name = "Poster",
-                            Price = 12m
+                            Name = "Baseball Cap",
+                            Price = 15.00m
                         },
                         new
                         {
                             Id = 13,
                             ItemType = 4,
-                            Name = "VIP Day",
-                            Price = 80m
+                            Name = "VIP Lounge Access",
+                            Price = 60.00m
                         },
                         new
                         {
                             Id = 14,
                             ItemType = 4,
-                            Name = "VIP Weekend",
-                            Price = 200m
+                            Name = "Meet & Greet Zone",
+                            Price = 80.00m
                         },
                         new
                         {
                             Id = 15,
                             ItemType = 4,
-                            Name = "Backstage Tour",
-                            Price = 150m
+                            Name = "VIP Backstage Tour",
+                            Price = 150.00m
                         },
                         new
                         {
                             Id = 16,
                             ItemType = 5,
-                            Name = "Locker",
-                            Price = 15m
+                            Name = "Locker Rental",
+                            Price = 15.00m
                         },
                         new
                         {
                             Id = 17,
                             ItemType = 5,
                             Name = "Powerbank Rental",
-                            Price = 8m
+                            Price = 8.00m
                         },
                         new
                         {
                             Id = 18,
                             ItemType = 5,
                             Name = "Rain Poncho",
-                            Price = 5m
+                            Price = 5.00m
                         });
                 });
 
@@ -347,20 +358,44 @@ namespace FestivalTickets.Infrastructure.Migrations
 
                     b.HasIndex("FestivalId");
 
-                    b.ToTable("Packages");
+                    b.ToTable("Packages", (string)null);
 
                     b.HasData(
                         new
                         {
                             Id = 1,
                             FestivalId = 1,
-                            Name = "Weekend Basic"
+                            Name = "Budget Deal"
                         },
                         new
                         {
                             Id = 2,
                             FestivalId = 1,
-                            Name = "Weekend Plus"
+                            Name = "Camping Comfort"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            FestivalId = 1,
+                            Name = "Ultimate Experience"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            FestivalId = 2,
+                            Name = "Day Tripper"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            FestivalId = 2,
+                            Name = "Weekend Warrior"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            FestivalId = 2,
+                            Name = "VIP All-In"
                         });
                 });
 
@@ -379,7 +414,57 @@ namespace FestivalTickets.Infrastructure.Migrations
 
                     b.HasIndex("ItemId");
 
-                    b.ToTable("PackageItems");
+                    b.ToTable("PackageItems", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            PackageId = 2,
+                            ItemId = 10,
+                            Quantity = 1
+                        },
+                        new
+                        {
+                            PackageId = 5,
+                            ItemId = 10,
+                            Quantity = 1
+                        },
+                        new
+                        {
+                            PackageId = 3,
+                            ItemId = 3,
+                            Quantity = 1
+                        },
+                        new
+                        {
+                            PackageId = 3,
+                            ItemId = 13,
+                            Quantity = 1
+                        },
+                        new
+                        {
+                            PackageId = 3,
+                            ItemId = 5,
+                            Quantity = 2
+                        },
+                        new
+                        {
+                            PackageId = 6,
+                            ItemId = 9,
+                            Quantity = 1
+                        },
+                        new
+                        {
+                            PackageId = 6,
+                            ItemId = 14,
+                            Quantity = 1
+                        },
+                        new
+                        {
+                            PackageId = 6,
+                            ItemId = 4,
+                            Quantity = 3
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -616,6 +701,15 @@ namespace FestivalTickets.Infrastructure.Migrations
                     b.Navigation("Booking");
 
                     b.Navigation("Item");
+                });
+
+            modelBuilder.Entity("FestivalTickets.Domain.Customer", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("FestivalTickets.Domain.Package", b =>

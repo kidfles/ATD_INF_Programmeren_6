@@ -27,7 +27,7 @@ public sealed class DiscountCalculator
     // Constructor voor testen: injecteer aangepaste strategieën
     public DiscountCalculator(IReadOnlyList<IDiscountStrategy> strategies)
     {
-        _strategies = strategies;
+        _strategies = strategies ?? throw new ArgumentNullException(nameof(strategies));
     }
 
     /// <summary>
