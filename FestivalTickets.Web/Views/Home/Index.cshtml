@@ -9,25 +9,25 @@
     @if (!User.Identity?.IsAuthenticated ?? false)
     {
         <div class="d-flex flex-wrap gap-2">
-            <a asp-controller="BookingWizard" asp-action="Step1" class="btn btn-primary">Book a Ticket</a>
-            <a asp-controller="Account" asp-action="Login" class="btn btn-outline-secondary">Login</a>
-            <a asp-controller="Account" asp-action="Register" class="btn btn-outline-secondary">Register</a>
+            <a asp-controller="BookingWizard" asp-action="Step1" class="btn btn-primary">Boek een Ticket</a>
+            <a asp-controller="Account" asp-action="Login" class="btn btn-outline-secondary">Inloggen</a>
+            <a asp-controller="Account" asp-action="Register" class="btn btn-outline-secondary">Registreren</a>
         </div>
     }
     else if (User.IsInRole("Customer"))
     {
         <div class="d-flex flex-wrap gap-2">
-            <a asp-controller="BookingWizard" asp-action="Step1" class="btn btn-primary">Book a Ticket</a>
-            <a asp-controller="CustomerBookings" asp-action="Index" class="btn btn-outline-secondary">My Bookings</a>
+            <a asp-controller="BookingWizard" asp-action="Step1" class="btn btn-primary">Boek een Ticket</a>
+            <a asp-controller="CustomerBookings" asp-action="Index" class="btn btn-outline-secondary">Mijn Boekingen</a>
         </div>
     }
     else if (User.IsInRole("Administrator"))
     {
-        <div class="alert alert-info mb-3">Welcome, Administrator</div>
+        <div class="alert alert-info mb-3">Welkom, Beheerder</div>
         <div class="d-flex flex-wrap gap-2">
-            <a asp-controller="AdminBookings" asp-action="Index" class="btn btn-primary">Bookings</a>
+            <a asp-controller="AdminBookings" asp-action="Index" class="btn btn-primary">Boekingen</a>
             <a asp-controller="Festivals" asp-action="Index" class="btn btn-outline-secondary">Festivals</a>
-            <a asp-controller="Packages" asp-action="Index" class="btn btn-outline-secondary">Packages</a>
+            <a asp-controller="Packages" asp-action="Index" class="btn btn-outline-secondary">Pakketten</a>
             <a asp-controller="Items" asp-action="Index" class="btn btn-outline-secondary">Items</a>
         </div>
     }
