@@ -117,6 +117,25 @@ static async Task SeedIdentityAsync(WebApplication app)
         });
         await db.SaveChangesAsync();
     }
+
+    var tom = await EnsureUserAsync(
+        userManager,
+        email: "tom@festivaltickets.nl",
+        password: "Customer@123!",
+        role: "Customer",
+        hasLoyaltyCard: false);
+
+    if (!await db.Customers.AnyAsync(c => c.UserId == tom.Id))
+    {
+        db.Customers.Add(new Customer
+        {
+            FirstName = "Tom",
+            LastName = "Klant",
+            Email = "tom@festivaltickets.nl",
+            UserId = tom.Id
+        });
+        await db.SaveChangesAsync();
+    }
 }
 
 static async Task EnsureRoleExistsAsync(RoleManager<IdentityRole> roleManager, string role)
