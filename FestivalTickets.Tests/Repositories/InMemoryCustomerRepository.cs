@@ -3,6 +3,10 @@ using FestivalTickets.Domain.Interfaces;
 
 namespace FestivalTickets.Tests.Repositories;
 
+/// <summary>
+/// In-memory implementatie van ICustomerRepository voor gebruik in unit tests.
+/// Geen database vereist — data wordt in een List bijgehouden.
+/// </summary>
 public sealed class InMemoryCustomerRepository : ICustomerRepository
 {
     private readonly List<Customer> _store = new();

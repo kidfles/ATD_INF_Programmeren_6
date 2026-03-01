@@ -4,6 +4,18 @@
     ViewData["Title"] = "Boekingswizard - Stap 3";
     var quantitiesByItemId = Model.ExtraItems.ToDictionary(x => x.ItemId, x => x.Quantity);
     var items = Model.AllItems.OrderBy(i => i.ItemType).ThenBy(i => i.Name).ToList();
+
+    // Vertaal ItemType enum naar leesbare Nederlandse naam
+    Func<FestivalTickets.Domain.ItemType, string> itemTypeLabel = t => t switch
+    {
+        FestivalTickets.Domain.ItemType.Camping        => "Camping",
+        FestivalTickets.Domain.ItemType.Food_and_Drinks => "Eten & drinken",
+        FestivalTickets.Domain.ItemType.Parking        => "Parkeren",
+        FestivalTickets.Domain.ItemType.Merchandise    => "Merchandise",
+        FestivalTickets.Domain.ItemType.VIPAccess      => "VIP toegang",
+        FestivalTickets.Domain.ItemType.Other          => "Overig",
+        _                                               => t.ToString()
+    };
 }
 
 <partial name="_WizardStepIndicator" model="3" />
@@ -43,7 +55,7 @@
                     var qty = quantitiesByItemId.TryGetValue(item.Id, out var selectedQty) ? selectedQty : 0;
                     var isChecked = qty > 0;
                     <tr>
-                        <td>@item.ItemType</td>
+                        <td>@itemTypeLabel(item.ItemType)</td>
                         <td>@item.Name</td>
                         <td>@item.Price.ToString("C")</td>
                         <td>
