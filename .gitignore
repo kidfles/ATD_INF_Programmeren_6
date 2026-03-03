@@ -485,3 +485,12 @@ $RECYCLE.BIN/
 
 # Artifacts
 .artifacts/
+
+/vendor/
+.env
+.env.*
+*.log
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
