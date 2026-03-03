@@ -5,18 +5,17 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FestivalTickets.Infrastructure;
 
-/// <summary>
-/// Hoofd EF Core DbContext. Erft van IdentityDbContext om AspNetUsers, Roles, Claims etc. op te nemen.
-/// </summary>
+// This acts as the bridge to our database.
 public sealed class ApplicationDbContext : IdentityDbContext<IdentityUser>
 {
-    public DbSet<Festival>     Festivals     => Set<Festival>();
-    public DbSet<Package>      Packages      => Set<Package>();
-    public DbSet<Item>         Items         => Set<Item>();
-    public DbSet<PackageItem>  PackageItems  => Set<PackageItem>();
-    public DbSet<Customer>     Customers     => Set<Customer>();
-    public DbSet<Booking>      Bookings      => Set<Booking>();
-    public DbSet<BookingItem>  BookingItems  => Set<BookingItem>();
+    // The tables in our database.
+    public DbSet<Festival> Festivals => Set<Festival>();
+    public DbSet<Package>  Packages  => Set<Package>();
+    public DbSet<Item>     Items     => Set<Item>();
+    public DbSet<PackageItem> PackageItems => Set<PackageItem>();
+    public DbSet<Customer> Customers => Set<Customer>();
+    public DbSet<Booking> Bookings => Set<Booking>();
+    public DbSet<BookingItem> BookingItems => Set<BookingItem>();
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
@@ -44,36 +43,35 @@ public sealed class ApplicationDbContext : IdentityDbContext<IdentityUser>
             .HasForeignKey(pi => pi.ItemId);
 
         b.Entity<Customer>()
+            .HasIndex(c => c.UserId)
+            .IsUnique();
+        b.Entity<Customer>()
             .HasOne<IdentityUser>()
             .WithMany()
             .HasForeignKey(c => c.UserId)
             .OnDelete(DeleteBehavior.Restrict);
 
         b.Entity<Booking>()
-            .HasOne(bk => bk.Customer)
+            .HasOne(x => x.Customer)
             .WithMany(c => c.Bookings)
-            .HasForeignKey(bk => bk.CustId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .HasForeignKey(x => x.CustId);
 
         b.Entity<Booking>()
-            .HasOne(bk => bk.Package)
+            .HasOne(x => x.Package)
             .WithMany()
-            .HasForeignKey(bk => bk.PackageId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .HasForeignKey(x => x.PackageId);
 
         b.Entity<BookingItem>()
-            .HasOne(bi => bi.Booking)
-            .WithMany(bk => bk.BookingItems)
-            .HasForeignKey(bi => bi.BookingId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .HasOne(x => x.Booking)
+            .WithMany(x => x.BookingItems)
+            .HasForeignKey(x => x.BookingId);
 
         b.Entity<BookingItem>()
-            .HasOne(bi => bi.Item)
+            .HasOne(x => x.Item)
             .WithMany()
-            .HasForeignKey(bi => bi.ItemId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .HasForeignKey(x => x.ItemId);
 
-        // ── Precisie ───────────────────────────────────────────────────────
+        // Decimal precision for money
         b.Entity<Festival>().Property(x => x.BasicPrice).HasPrecision(18, 2);
         b.Entity<Item>().Property(x => x.Price).HasPrecision(18, 2);
         b.Entity<Booking>().Property(x => x.TotalPricePaid).HasPrecision(18, 2);
@@ -85,7 +83,6 @@ public sealed class ApplicationDbContext : IdentityDbContext<IdentityUser>
         // ── Indexen ────────────────────────────────────────────────────────
         b.Entity<Festival>().HasIndex(x => x.Name);
         b.Entity<Item>().HasIndex(x => new { x.ItemType, x.Name });
-        b.Entity<Customer>().HasIndex(x => x.UserId).IsUnique();
 
         // ── Schakel ALLE cascade deletes uit ───────────────────────────────
         foreach (var fk in b.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))

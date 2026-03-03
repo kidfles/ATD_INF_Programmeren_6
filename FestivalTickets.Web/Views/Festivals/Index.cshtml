@@ -1,7 +1,7 @@
 @model IEnumerable<FestivalTickets.Domain.Festival>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Festivals";
 }
 
 <h1>Festivals</h1>
@@ -9,65 +9,67 @@
 <p>
     <a class="btn btn-success" asp-action="Create">Nieuw</a>
 </p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Place)
-            </th>
-            <th>Logo</th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.BasicPrice)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.StartDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.EndDate)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Place)
-            </td>
-            <td>
-                @if (!string.IsNullOrEmpty(item.Logo))
-                {
-                    <img src="@item.Logo" alt="@item.Name logo" style="height:32px" />
-                }
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.BasicPrice)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.StartDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EndDate)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Bewerken</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Verwijderen</a> |
-                <a asp-controller="Packages" asp-action="Index" asp-route-festivalId="@item.Id">Pakketten</a>
-            </td>
-        </tr>
+@if (!Model.Any())
+{
+    <div class="alert alert-info">Geen gegevens beschikbaar.</div>
 }
-    </tbody>
-</table>
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Name)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Place)
+                </th>
+                <th>Logo</th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Description)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.BasicPrice)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.StartDate)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.EndDate)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Place)
+                    </td>
+                    <td>
+                        @if (!string.IsNullOrEmpty(item.Logo))
+                        {
+                            <img src="@item.Logo" alt="@item.Name logo" style="height:32px" />
+                        }
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Description)
+                    </td>
+                    <td>@item.BasicPrice.ToString("C")</td>
+                    <td>@item.StartDate.ToString("dd-MM-yyyy")</td>
+                    <td>@item.EndDate.ToString("dd-MM-yyyy")</td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.Id">Bewerken</a> |
+                        <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                        <a asp-action="Delete" asp-route-id="@item.Id">Verwijderen</a> |
+                        <a asp-controller="Packages" asp-action="Index" asp-route-festivalId="@item.Id">Pakketten</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

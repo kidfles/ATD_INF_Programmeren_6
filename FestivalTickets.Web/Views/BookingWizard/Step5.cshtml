@@ -1,0 +1,98 @@
+@model FestivalTickets.Web.Models.Step5ViewModel
+
+@{
+    ViewData["Title"] = "Boekingswizard - Stap 5";
+    var festival = Model.Package?.Festival;
+    var packageItemsCost = Model.Package?.PackageItems.Sum(pi => pi.Item.Price * pi.Quantity) ?? 0m;
+    var ticketUnitPrice = (festival?.BasicPrice ?? 0m) + packageItemsCost;
+    var ticketSubtotal = ticketUnitPrice * Model.TicketQuantity;
+    var extrasSubtotal = Model.ExtraItems.Sum(e => e.UnitPrice * e.Quantity);
+    var subtotal = ticketSubtotal + extrasSubtotal;
+}
+
+<partial name="_WizardStepIndicator" model="5" />
+
+<h1 class="h3 mb-3">Stap 5 - Controle en bevestiging</h1>
+
+<div class="card shadow-sm mb-3">
+    <div class="card-body">
+        <h2 class="h5">Factuur</h2>
+
+        <dl class="row mb-3">
+            <dt class="col-sm-3">Festival</dt>
+            <dd class="col-sm-9">@(festival?.Name ?? "-")</dd>
+            <dt class="col-sm-3">Pakket</dt>
+            <dd class="col-sm-9">@(Model.Package?.Name ?? "-")</dd>
+            <dt class="col-sm-3">Tickets</dt>
+            <dd class="col-sm-9">@Model.TicketQuantity x @ticketUnitPrice.ToString("C") = @ticketSubtotal.ToString("C")</dd>
+        </dl>
+
+        <h3 class="h6">Extra items</h3>
+        @if (!Model.ExtraItems.Any())
+        {
+            <p class="text-muted">Geen extra items.</p>
+        }
+        else
+        {
+            <div class="table-responsive mb-3">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Aantal</th>
+                            <th>Prijs</th>
+                            <th>Regeltotaal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var item in Model.ExtraItems)
+                    {
+                        var lineTotal = item.UnitPrice * item.Quantity;
+                        <tr>
+                            <td>@item.ItemName</td>
+                            <td>@item.Quantity</td>
+                            <td>@item.UnitPrice.ToString("C")</td>
+                            <td>@lineTotal.ToString("C")</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
+
+        <hr />
+        <div class="d-flex justify-content-between mb-1">
+            <span>Subtotaal</span>
+            <span>@subtotal.ToString("C")</span>
+        </div>
+
+        @foreach (var discount in Model.DiscountLines)
+        {
+            <div class="d-flex justify-content-between text-success mb-1">
+                <span>@discount.Name</span>
+                <span>-@discount.Saving.ToString("C")</span>
+            </div>
+        }
+
+        <div class="d-flex justify-content-between fw-bold fs-5 mt-2">
+            <span>Totaal</span>
+            <span>@Model.FinalTotal.ToString("C")</span>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex gap-2">
+    <a asp-action="Step3" class="btn btn-outline-secondary">Terug</a>
+    <form asp-action="Confirm" method="post" class="d-inline">
+        @Html.AntiForgeryToken()
+        <button type="submit" class="btn btn-success">Bevestig &amp; Betaal</button>
+    </form>
+    <form asp-action="Cancel" method="post" class="d-inline">
+        @Html.AntiForgeryToken()
+        <button type="submit" class="btn btn-outline-danger">Annuleren</button>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

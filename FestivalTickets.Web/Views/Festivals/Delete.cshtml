@@ -1,12 +1,12 @@
 @model FestivalTickets.Domain.Festival
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Verwijderen";
 }
 
-<h1>Delete</h1>
+<h1>Verwijderen</h1>
 
-<h3>Weet je zeker dat je dit wilt deleten?</h3>
+<h3>Weet je zeker dat je dit wilt verwijderen?</h3>
 <div>
     <h4>Festival</h4>
     <hr />
@@ -55,9 +55,14 @@
         </dd>
     </dl>
     
-    <form asp-action="Delete">
+    <form asp-action="Delete" method="post">
+        @Html.AntiForgeryToken()
         <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
+        <input type="submit" value="Verwijderen" class="btn btn-danger" /> |
         <a asp-action="Index">Terug naar lijst</a>
     </form>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

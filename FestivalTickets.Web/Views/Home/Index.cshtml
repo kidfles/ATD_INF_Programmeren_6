@@ -1,38 +1,34 @@
 @{
-    ViewData["Title"] = "Start";
+    ViewData["Title"] = "Welkom";
 }
 
-<div class="py-4">
-    <h1 class="display-5 fw-bold">Festival Configurator</h1>
-    <p class="lead">Beheer festivals, stel pakketten samen en voeg items toe voor tickets zonder gedoe.</p>
-</div>
+<section class="py-4">
+    <h1 class="display-5 fw-bold">FestivalTickets</h1>
+    <p class="lead mb-4">Welkom bij FestivalTickets. Boek tickets in enkele stappen en beheer eenvoudig je boekingen.</p>
 
-<div class="row g-4">
-    <div class="col-md-4">
-        <div class="card h-100 shadow-sm">
-            <div class="card-body">
-                <h5 class="card-title">Festivals</h5>
-                <p class="card-text">Voeg nieuwe festivals toe, upload het logo en beheer basisinformatie zoals data en prijzen.</p>
-                <a asp-controller="Festivals" asp-action="Index" class="btn btn-primary">Naar festivals</a>
-            </div>
+    @if (!User.Identity?.IsAuthenticated ?? false)
+    {
+        <div class="d-flex flex-wrap gap-2">
+            <a asp-controller="BookingWizard" asp-action="Step1" class="btn btn-primary">Boek een Ticket</a>
+            <a asp-controller="Account" asp-action="Login" class="btn btn-outline-secondary">Inloggen</a>
+            <a asp-controller="Account" asp-action="Register" class="btn btn-outline-secondary">Registreren</a>
         </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card h-100 shadow-sm">
-            <div class="card-body">
-                <h5 class="card-title">Pakketten</h5>
-                <p class="card-text">Bundel items in pakketten per festival en bekijk de details inclusief geselecteerde items.</p>
-                <a asp-controller="Packages" asp-action="Index" class="btn btn-primary">Naar pakketten</a>
-            </div>
+    }
+    else if (User.IsInRole("Customer"))
+    {
+        <div class="d-flex flex-wrap gap-2">
+            <a asp-controller="BookingWizard" asp-action="Step1" class="btn btn-primary">Boek een Ticket</a>
+            <a asp-controller="CustomerBookings" asp-action="Index" class="btn btn-outline-secondary">Mijn Boekingen</a>
         </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card h-100 shadow-sm">
-            <div class="card-body">
-                <h5 class="card-title">Items</h5>
-                <p class="card-text">Beheer alle beschikbare items en houd typen en prijzen overzichtelijk op orde.</p>
-                <a asp-controller="Items" asp-action="Index" class="btn btn-primary">Naar items</a>
-            </div>
+    }
+    else if (User.IsInRole("Administrator"))
+    {
+        <div class="alert alert-info mb-3">Welkom, Beheerder</div>
+        <div class="d-flex flex-wrap gap-2">
+            <a asp-controller="AdminBookings" asp-action="Index" class="btn btn-primary">Boekingen</a>
+            <a asp-controller="Festivals" asp-action="Index" class="btn btn-outline-secondary">Festivals</a>
+            <a asp-controller="Packages" asp-action="Index" class="btn btn-outline-secondary">Pakketten</a>
+            <a asp-controller="Items" asp-action="Index" class="btn btn-outline-secondary">Items</a>
         </div>
-    </div>
-</div>
+    }
+</section>

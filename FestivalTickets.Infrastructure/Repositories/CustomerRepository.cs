@@ -6,20 +6,43 @@ namespace FestivalTickets.Infrastructure.Repositories;
 
 public sealed class CustomerRepository : ICustomerRepository
 {
-    private readonly ApplicationDbContext _db;
-    public CustomerRepository(ApplicationDbContext db) => _db = db;
+    private readonly ApplicationDbContext _context;
 
-    public async Task<Customer?> GetByUserIdAsync(string userId) =>
-        await _db.Customers.FirstOrDefaultAsync(c => c.UserId == userId);
+    public CustomerRepository(ApplicationDbContext context)
+    {
+        _context = context;
+    }
 
-    public async Task<Customer?> GetByIdAsync(int id) =>
-        await _db.Customers.FindAsync(id);
+    public async Task<Customer?> GetByUserIdAsync(string userId)
+    {
+        return await _context.Customers
+            .AsNoTracking()
+            .FirstOrDefaultAsync(c => c.UserId == userId);
+    }
 
-    public async Task<IEnumerable<Customer>> GetAllAsync() =>
-        await _db.Customers.ToListAsync();
+    public async Task<Customer?> GetByIdAsync(int id)
+    {
+        return await _context.Customers
+            .AsNoTracking()
+            .FirstOrDefaultAsync(c => c.Id == id);
+    }
 
-    public async Task AddAsync(Customer customer) =>
-        await _db.Customers.AddAsync(customer);
+    public async Task<IEnumerable<Customer>> GetAllAsync()
+    {
+        return await _context.Customers
+            .AsNoTracking()
+            .OrderBy(c => c.LastName)
+            .ThenBy(c => c.FirstName)
+            .ToListAsync();
+    }
 
-    public async Task SaveChangesAsync() => await _db.SaveChangesAsync();
+    public async Task AddAsync(Customer customer)
+    {
+        await _context.Customers.AddAsync(customer);
+    }
+
+    public async Task SaveChangesAsync()
+    {
+        await _context.SaveChangesAsync();
+    }
 }

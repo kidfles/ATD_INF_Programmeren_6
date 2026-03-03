@@ -1,0 +1,83 @@
+@model FestivalTickets.Web.Models.Step2ViewModel
+
+@{
+    ViewData["Title"] = "Boekingswizard - Stap 2";
+}
+
+<partial name="_WizardStepIndicator" model="2" />
+
+<h1 class="h3 mb-3">Stap 2 - Kies een pakket</h1>
+
+@if (Model.Festival != null)
+{
+    <div class="alert alert-light border">
+        <strong>@Model.Festival.Name</strong> - @Model.Festival.Place<br />
+        @Model.Festival.StartDate.ToString("dd-MM-yyyy") - @Model.Festival.EndDate.ToString("dd-MM-yyyy")
+    </div>
+}
+
+<form asp-action="Step2" method="post">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+
+    @if (!Model.Packages.Any())
+    {
+        <div class="alert alert-info">Geen gegevens beschikbaar.</div>
+    }
+    else
+    {
+        <div class="table-responsive mb-3">
+            <table class="table table-striped align-middle">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Pakket</th>
+                        <th>Inbegrepen items</th>
+                        <th>Prijs per ticket</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var package in Model.Packages)
+                {
+                    var itemsCost = package.PackageItems.Sum(pi => pi.Item.Price * pi.Quantity);
+                    var ticketPrice = (Model.Festival?.BasicPrice ?? 0m) + itemsCost;
+
+                    <tr>
+                        <td>
+                            <input class="form-check-input" type="radio" asp-for="SelectedPackageId" value="@package.Id" />
+                        </td>
+                        <td>@package.Name</td>
+                        <td>
+                            @if (package.PackageItems.Any())
+                            {
+                                @string.Join(", ", package.PackageItems.OrderBy(pi => pi.Item.Name).Select(pi => $"{pi.Item.Name} x{pi.Quantity}"))
+                            }
+                            else
+                            {
+                                <span class="text-muted">Geen</span>
+                            }
+                        </td>
+                        <td>@ticketPrice.ToString("C")</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+
+    <div class="mb-3">
+        <label asp-for="TicketQuantity" class="form-label"></label>
+        <input asp-for="TicketQuantity" class="form-control" min="1" />
+        <span asp-validation-for="TicketQuantity" class="text-danger"></span>
+    </div>
+
+    <div class="d-flex gap-2">
+        <a asp-action="Step1" class="btn btn-outline-secondary">Terug</a>
+        <button type="submit" class="btn btn-primary">Volgende</button>
+        <button type="submit" class="btn btn-outline-danger" formaction="@Url.Action("Cancel", "BookingWizard")" formmethod="post">Annuleren</button>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
