@@ -3,45 +3,30 @@
     ViewData["Title"] = "Profiel";
 }
 
-<h2>@ViewData["Title"]</h2>
+<h1 class="h3 mb-3">Mijn profiel</h1>
 
-@if (TempData["Success"] != null)
-{
-    <div class="alert alert-success mt-2 mb-4">
-        @TempData["Success"]
+<form asp-action="Profile" method="post" class="row g-3">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="col-md-6">
+        <label asp-for="FirstName" class="form-label"></label>
+        <input asp-for="FirstName" class="form-control" />
+        <span asp-validation-for="FirstName" class="text-danger"></span>
     </div>
-}
-
-<div class="row">
-    <div class="col-md-4">
-        <form method="post">
-            <h4>Beheer uw profiel instellingen.</h4>
-            <hr />
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            
-            <div class="mb-3">
-                <label asp-for="Email" class="form-label"></label>
-                <input asp-for="Email" class="form-control" disabled />
-            </div>
-
-            <div class="mb-3">
-                <label asp-for="FirstName" class="form-label"></label>
-                <input asp-for="FirstName" class="form-control" />
-                <span asp-validation-for="FirstName" class="text-danger"></span>
-            </div>
-            
-            <div class="mb-3">
-                <label asp-for="LastName" class="form-label"></label>
-                <input asp-for="LastName" class="form-control" />
-                <span asp-validation-for="LastName" class="text-danger"></span>
-            </div>
-            
-            <div class="mb-3">
-                <button type="submit" class="btn btn-primary">Opslaan</button>
-            </div>
-        </form>
+    <div class="col-md-6">
+        <label asp-for="LastName" class="form-label"></label>
+        <input asp-for="LastName" class="form-control" />
+        <span asp-validation-for="LastName" class="text-danger"></span>
     </div>
-</div>
+    <div class="col-12">
+        <label asp-for="Email" class="form-label"></label>
+        <input asp-for="Email" class="form-control" readonly />
+    </div>
+    <div class="col-12">
+        <button type="submit" class="btn btn-primary">Opslaan</button>
+    </div>
+</form>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

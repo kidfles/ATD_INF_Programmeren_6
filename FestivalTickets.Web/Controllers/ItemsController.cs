@@ -7,10 +7,12 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using FestivalTickets.Domain;
 using FestivalTickets.Infrastructure;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FestivalTickets.Web.Controllers
 {
     // This controller manages all the items (like tents, tickets, parking spots, etc.).
+    [Authorize(Roles = "Administrator")]
     public class ItemsController : Controller
     {
         private readonly ApplicationDbContext _context;

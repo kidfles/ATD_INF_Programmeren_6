@@ -3,14 +3,14 @@
     ViewData["Title"] = "Inloggen";
 }
 
-<h2>@ViewData["Title"]</h2>
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <h1 class="h3 mb-3">Inloggen</h1>
 
-<div class="row">
-    <div class="col-md-4">
-        <form asp-route-returnurl="@ViewData["ReturnUrl"]" method="post">
-            <h4>Gebruik een lokaal account om in te loggen.</h4>
-            <hr />
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <form asp-action="Login" method="post">
+            <input type="hidden" asp-for="ReturnUrl" />
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+
             <div class="mb-3">
                 <label asp-for="Email" class="form-label"></label>
                 <input asp-for="Email" class="form-control" />
@@ -21,17 +21,15 @@
                 <input asp-for="Password" class="form-control" />
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
-            <div class="mb-3 form-check">
+
+            <div class="form-check mb-3">
                 <input asp-for="RememberMe" class="form-check-input" />
                 <label asp-for="RememberMe" class="form-check-label"></label>
             </div>
-            <div class="mb-3">
+
+            <div class="d-flex gap-2">
                 <button type="submit" class="btn btn-primary">Inloggen</button>
-            </div>
-            <div class="mb-3">
-                <p>
-                    <a asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]">Registreren als nieuwe gebruiker?</a>
-                </p>
+                <a asp-action="Register" asp-route-returnUrl="@Model.ReturnUrl" class="btn btn-outline-secondary">Registreren</a>
             </div>
         </form>
     </div>

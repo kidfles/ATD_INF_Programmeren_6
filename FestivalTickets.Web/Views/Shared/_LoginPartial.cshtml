@@ -2,57 +2,57 @@
 @inject SignInManager<IdentityUser> SignInManager
 @inject UserManager<IdentityUser> UserManager
 
-<ul class="navbar-nav">
+<ul class="navbar-nav ms-auto align-items-sm-center">
 @if (SignInManager.IsSignedIn(User))
 {
-    var user = await UserManager.GetUserAsync(User);
-    var isAdmin = user != null && await UserManager.IsInRoleAsync(user, "Administrator");
+    var currentUser = await UserManager.GetUserAsync(User);
+    var userName = currentUser?.Email ?? User.Identity?.Name ?? "Gebruiker";
+    var role = User.IsInRole("Administrator") ? "Administrator"
+        : User.IsInRole("Customer") ? "Customer"
+        : "-";
+
+    if (User.IsInRole("Customer"))
+    {
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-controller="CustomerBookings" asp-action="Index">Mijn Boekingen</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-controller="Account" asp-action="Profile">Profiel</a>
+        </li>
+    }
+    if (User.IsInRole("Administrator"))
+    {
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-controller="AdminBookings" asp-action="Index">Boekingen</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-controller="Festivals" asp-action="Index">Festivals</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-controller="Packages" asp-action="Index">Pakketten</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-controller="Items" asp-action="Index">Items</a>
+        </li>
+    }
 
     <li class="nav-item">
-        <span class="nav-link text-dark">Hallo @User.Identity?.Name!</span>
+        <span class="nav-link text-muted">@userName (@role)</span>
     </li>
-
-    @if (isAdmin)
-    {
-        <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="" asp-controller="AdminBookings" asp-action="Index">Boekingen</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="" asp-controller="Festivals" asp-action="Index">Festivals</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="" asp-controller="Packages" asp-action="Index">Pakketten</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="" asp-controller="Items" asp-action="Index">Items</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="" asp-controller="AdminBookings" asp-action="ManageLoyalty">Klanten</a>
-        </li>
-    }
-    else
-    {
-        <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="" asp-controller="Bookings" asp-action="Index">Mijn Boekingen</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Profile">Mijn Profiel</a>
-        </li>
-    }
-
     <li class="nav-item">
-        <form class="form-inline" asp-area="" asp-controller="Account" asp-action="Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-            <button type="submit" class="nav-link btn btn-link text-dark">Uitloggen</button>
+        <form class="d-inline" asp-controller="Account" asp-action="Logout" method="post">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-link nav-link text-dark">Uitloggen</button>
         </form>
     </li>
 }
 else
 {
     <li class="nav-item">
-        <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Register">Registreren</a>
+        <a class="nav-link text-dark" asp-controller="Account" asp-action="Login">Inloggen</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Login">Inloggen</a>
+        <a class="nav-link text-dark" asp-controller="Account" asp-action="Register">Registreren</a>
     </li>
 }
 </ul>

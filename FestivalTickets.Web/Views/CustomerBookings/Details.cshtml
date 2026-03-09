@@ -1,0 +1,12 @@
+@model FestivalTickets.Domain.Booking
+
+@{
+    ViewData["Title"] = "Boeking factuur";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0">Factuur boeking #@Model.Id</h1>
+    <a asp-action="Index" class="btn btn-outline-secondary">Terug naar mijn boekingen</a>
+</div>
+
+<partial name="_BookingInvoice" model="Model" />

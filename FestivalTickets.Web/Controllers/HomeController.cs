@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using FestivalTickets.Web.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FestivalTickets.Web.Controllers;
 
@@ -16,6 +17,7 @@ public class HomeController : Controller
 
     // GET: /
     // Just shows the homepage.
+    [AllowAnonymous]
     public IActionResult Index()
     {
         return View();

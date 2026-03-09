@@ -1,0 +1,42 @@
+@{
+    ViewData["Title"] = "Boekingswizard - Stap 4";
+    const string returnUrl = "/BookingWizard/Step5";
+}
+
+<partial name="_WizardStepIndicator" model="4" />
+
+<h1 class="h3 mb-3">Stap 4 - Inloggen of registreren</h1>
+<p>Je moet ingelogd zijn om verder te gaan.</p>
+
+<div class="row g-3 mb-3">
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-body">
+                <h2 class="h5">Bestaande klant</h2>
+                <p class="text-muted">Log in met je account om door te gaan naar de factuur.</p>
+                <a class="btn btn-primary" asp-controller="Account" asp-action="Login" asp-route-returnUrl="@returnUrl">Inloggen</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-body">
+                <h2 class="h5">Nieuw account</h2>
+                <p class="text-muted">Nog geen account? Registreer en ga direct verder met je boeking.</p>
+                <a class="btn btn-outline-primary" asp-controller="Account" asp-action="Register" asp-route-returnUrl="@returnUrl">Registreren</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex gap-2">
+    <a asp-action="Step3" class="btn btn-outline-secondary">Terug</a>
+    <form asp-action="Cancel" method="post" class="d-inline">
+        @Html.AntiForgeryToken()
+        <button type="submit" class="btn btn-outline-danger">Annuleren</button>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

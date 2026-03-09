@@ -52,7 +52,7 @@ namespace FestivalTickets.Infrastructure.Migrations
 
                     b.HasIndex("PackageId");
 
-                    b.ToTable("Bookings");
+                    b.ToTable("Bookings", (string)null);
                 });
 
             modelBuilder.Entity("FestivalTickets.Domain.BookingItem", b =>
@@ -78,7 +78,7 @@ namespace FestivalTickets.Infrastructure.Migrations
 
                     b.HasIndex("ItemId");
 
-                    b.ToTable("BookingItems");
+                    b.ToTable("BookingItems", (string)null);
                 });
 
             modelBuilder.Entity("FestivalTickets.Domain.Customer", b =>
@@ -113,7 +113,7 @@ namespace FestivalTickets.Infrastructure.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("Customers");
+                    b.ToTable("Customers", (string)null);
                 });
 
             modelBuilder.Entity("FestivalTickets.Domain.Festival", b =>
@@ -156,7 +156,7 @@ namespace FestivalTickets.Infrastructure.Migrations
 
                     b.HasIndex("Name");
 
-                    b.ToTable("Festivals");
+                    b.ToTable("Festivals", (string)null);
 
                     b.HasData(
                         new
@@ -207,7 +207,7 @@ namespace FestivalTickets.Infrastructure.Migrations
 
                     b.HasIndex("ItemType", "Name");
 
-                    b.ToTable("Items");
+                    b.ToTable("Items", (string)null);
 
                     b.HasData(
                         new
@@ -358,7 +358,7 @@ namespace FestivalTickets.Infrastructure.Migrations
 
                     b.HasIndex("FestivalId");
 
-                    b.ToTable("Packages");
+                    b.ToTable("Packages", (string)null);
 
                     b.HasData(
                         new
@@ -414,7 +414,7 @@ namespace FestivalTickets.Infrastructure.Migrations
 
                     b.HasIndex("ItemId");
 
-                    b.ToTable("PackageItems");
+                    b.ToTable("PackageItems", (string)null);
 
                     b.HasData(
                         new

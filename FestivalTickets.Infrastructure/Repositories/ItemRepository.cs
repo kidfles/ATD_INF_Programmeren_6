@@ -6,9 +6,19 @@ namespace FestivalTickets.Infrastructure.Repositories;
 
 public sealed class ItemRepository : IItemRepository
 {
-    private readonly ApplicationDbContext _db;
-    public ItemRepository(ApplicationDbContext db) => _db = db;
+    private readonly ApplicationDbContext _context;
 
-    public async Task<IEnumerable<Item>> GetAllAsync() =>
-        await _db.Items.OrderBy(i => i.ItemType).ThenBy(i => i.Name).ToListAsync();
+    public ItemRepository(ApplicationDbContext context)
+    {
+        _context = context;
+    }
+
+    public async Task<IEnumerable<Item>> GetAllAsync()
+    {
+        return await _context.Items
+            .AsNoTracking()
+            .OrderBy(i => i.ItemType)
+            .ThenBy(i => i.Name)
+            .ToListAsync();
+    }
 }

@@ -482,3 +482,15 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+# Artifacts
+.artifacts/
+
+/vendor/
+.env
+.env.*
+*.log
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

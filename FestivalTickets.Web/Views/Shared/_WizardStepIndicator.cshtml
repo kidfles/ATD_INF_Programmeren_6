@@ -1,0 +1,15 @@
+@model int
+
+@{
+    var steps = new[] { "Stap 1", "Stap 2", "Stap 3", "Stap 4", "Stap 5" };
+}
+
+<div class="mb-4">
+    <div class="d-flex flex-wrap gap-2">
+        @for (var i = 1; i <= steps.Length; i++)
+        {
+            var css = i == Model ? "badge bg-primary" : "badge bg-secondary";
+            <span class="@css">@steps[i - 1]</span>
+        }
+    </div>
+</div>

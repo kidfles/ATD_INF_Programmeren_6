@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using FestivalTickets.Domain;
 using FestivalTickets.Infrastructure;
 using FestivalTickets.Web.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -13,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 namespace FestivalTickets.Web.Controllers
 {
     // Handles everything related to Festivals. Creating, editing, you name it.
+    [Authorize(Roles = "Administrator")]
     public class FestivalsController : Controller
     {
         private readonly ApplicationDbContext _context;

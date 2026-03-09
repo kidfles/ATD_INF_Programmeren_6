@@ -21,7 +21,7 @@
             <dd class="col-sm-9 fw-medium">@Model.Customer?.FirstName @Model.Customer?.LastName</dd>
 
             <dt class="col-sm-3 text-muted">Boekingsdatum</dt>
-            <dd class="col-sm-9">@Model.BookingDate.ToString("dd-MM-yyyy HH:mm")</dd>
+            <dd class="col-sm-9">@Model.BookingDate.ToString("dd-MM-yyyy")</dd>
 
             <dt class="col-sm-3 text-muted">Festival</dt>
             <dd class="col-sm-9">@Model.Package?.Festival?.Name</dd>
@@ -35,11 +35,16 @@
     </div>
     <div class="card-footer bg-light px-4 py-3 border-top text-end">
         <form asp-action="Delete" method="post">
+            @Html.AntiForgeryToken()
             <input type="hidden" asp-for="Id" />
             <a asp-action="Index" class="btn btn-outline-secondary me-2">Annuleren</a>
             <button type="submit" class="btn btn-danger">
-                <i class="bi bi-trash"></i> Verwijderen Bevestigen
+                Verwijderen Bevestigen
             </button>
         </form>
     </div>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
