@@ -14,7 +14,7 @@ public sealed class GroupDiscountStrategy : IDiscountStrategy
         if (context.TicketQuantity < 5) return context.CurrentTotal;
 
         decimal extraItemTotal = context.ExtraItems.Sum(e => e.UnitPrice * e.Quantity);
-        decimal ticketTotal = context.CurrentTotal - extraItemTotal;
+        decimal ticketTotal = Math.Max(0m, context.CurrentTotal - extraItemTotal);
         decimal discount = ticketTotal * 0.20m;
 
         return context.CurrentTotal - discount;

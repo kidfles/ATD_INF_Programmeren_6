@@ -23,7 +23,7 @@ public sealed class EarlyBirdDiscountStrategy : IDiscountStrategy
         // De strategie ontvangt CurrentTotal wat op dit punt nog gelijk is aan BaseTotal
         // Ticketprijs = BaseTotal - som van alle extra item kosten
         decimal extraItemTotal = context.ExtraItems.Sum(e => e.UnitPrice * e.Quantity);
-        decimal ticketTotal = context.CurrentTotal - extraItemTotal;
+        decimal ticketTotal = Math.Max(0m, context.CurrentTotal - extraItemTotal);
         decimal discount = ticketTotal * 0.15m;
 
         return context.CurrentTotal - discount;
